@@ -1,0 +1,58 @@
+# On a version tag (v0.1.0, …): build the Flatpak bundle and the AppImage and attach both
+# to a GitHub release.
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+        with:
+          bundle: Cloud_Clipboard-x86_64.flatpak
+          manifest-path: build-aux/io.github.vofy.CloudClipboard.yml
+          cache-key: flatpak-${{ github.sha }}
+
+  appimage:
+    # Ubuntu 24.04 has GTK 4.14 and libadwaita 1.5, the oldest versions the app supports,
+    # so the AppImage runs on distributions at least that old.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev wl-clipboard poppler-utils \
+            libfuse2 file desktop-file-utils
+      - uses: dtolnay/rust-toolchain@stable
+      - run: build-aux/appimage.sh
+        env:
+          VERSION: ${{ github.ref_name }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appimage
+          path: Cloud_Clipboard-x86_64.AppImage
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [flatpak, appimage]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Cloud_Clipboard-x86_64.flatpak
+            Cloud_Clipboard-x86_64.AppImage
+          generate_release_notes: true

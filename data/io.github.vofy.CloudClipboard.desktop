@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Cloud Clipboard
+Comment=Copy new files from a cloud folder to the clipboard
+Exec=cloud-clipboard
+Icon=io.github.vofy.CloudClipboard
+Terminal=false
+Categories=Utility;
+Keywords=clipboard;scan;drive;rclone;paste;
+StartupNotify=false

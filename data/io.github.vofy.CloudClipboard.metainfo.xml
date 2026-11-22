@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.vofy.CloudClipboard</id>
+  <name>Cloud Clipboard</name>
+  <summary>Copy new files from a cloud folder to the clipboard</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.vofy">
+    <name>vofy</name>
+  </developer>
+  <description>
+    <p>
+      Watches a folder on any cloud storage rclone supports (Google Drive, OneDrive, Dropbox…)
+      or on this computer. Every new file goes to the clipboard and then moves to an archive
+      subfolder, where it's deleted after a day. Scan a document on the phone, press Ctrl+V on
+      the computer.
+    </p>
+    <p>A tray icon pauses and resumes watching and opens the settings.</p>
+  </description>
+  <launchable type="desktop-id">io.github.vofy.CloudClipboard.desktop</launchable>
+  <url type="homepage">https://github.com/vofy/cloud-clipboard</url>
+  <url type="bugtracker">https://github.com/vofy/cloud-clipboard/issues</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-11-22"/>
+  </releases>
+</component>
