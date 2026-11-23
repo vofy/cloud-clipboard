@@ -9,6 +9,9 @@ RCLONE_SHA256=b00f00b3266c3764413afe599d3ec316f6f43b3e0ea8a0bc1d186d2133e46df7
 TOOLS=target/appimage-tools
 export VERSION=${VERSION:-$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)}
 export APPIMAGE_EXTRACT_AND_RUN=1 DEPLOY_GTK_VERSION=4 LDAI_OUTPUT=Cloud_Clipboard-x86_64.AppImage
+# Lets AppImageUpdate and AppImage managers (AM, AppImagePool, Gear Lever) find new releases;
+# linuxdeploy also writes the matching .zsync file, which the release workflow uploads.
+export LDAI_UPDATE_INFORMATION="gh-releases-zsync|vofy|cloud-clipboard|latest|Cloud_Clipboard-x86_64.AppImage.zsync"
 
 get() {
     [[ -x $TOOLS/$1 ]] && return
