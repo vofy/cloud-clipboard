@@ -11,17 +11,24 @@ permissions:
 
 jobs:
   flatpak:
+    # Built on the runner itself: the flatpak-github-actions container fails to update its
+    # preinstalled GNOME SDK ("Invalid cross-device link").
     runs-on: ubuntu-24.04
-    container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
-      options: --privileged
     steps:
       - uses: actions/checkout@v4
-      - uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      - run: |
+          flatpak-builder --user --install-deps-from=flathub --force-clean --disable-rofiles-fuse \
+            --repo=repo build-dir build-aux/io.github.vofy.CloudClipboard.yml
+          flatpak build-bundle --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo \
+            repo Cloud_Clipboard-x86_64.flatpak io.github.vofy.CloudClipboard
+      - uses: actions/upload-artifact@v4
         with:
-          bundle: Cloud_Clipboard-x86_64.flatpak
-          manifest-path: build-aux/io.github.vofy.CloudClipboard.yml
-          cache-key: flatpak-${{ github.sha }}
+          name: flatpak
+          path: Cloud_Clipboard-x86_64.flatpak
 
   appimage:
     # Ubuntu 24.04 has GTK 4.14 and libadwaita 1.5, the oldest versions the app supports,
